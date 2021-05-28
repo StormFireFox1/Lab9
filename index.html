@@ -21,21 +21,21 @@
       height: 18px;
       margin-top: 5px;
       padding: 5px;
-      width: 240px;
+      width: 360px;
     }
   </style>
 </head>
 <body>
   <fieldset>
     <legend>Error Calculator</legend>
-    <input type="number" name="first-num" id="first-num" />
+    <input name="first-num" id="first-num" />
     <select name="operator" id="operator">
       <option>+</option>
       <option>-</option>
       <option>*</option>
       <option>/</option>
     </select>
-    <input type="number" name="second-num" id="second-num" />
+    <input name="second-num" id="second-num" />
     <button id="calculate">Calculate</button>
     <br />
     <output></output>
@@ -56,17 +56,89 @@
   </section>
 
   <script>
-    let calculateBtn = document.querySelector('#calculate');
-    calculateBtn.addEventListener('click', () => {
+    class CalculationError extends Error {
+        constructor(message) {
+          super(message);
+          this.name = "CalculationError";
+        }
+      }
+      let calculatorUseCount = 1;
+      let calculateBtn = document.querySelector('#calculate');
+      calculateBtn.addEventListener('click', () => {
       let output = document.querySelector('output');
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        console.group('Calculation Run #' + calculatorUseCount);
+        throw new Error('starting new calculation!');
+      } catch (err) {
+        console.log(err.message);
+      }
+
+      try {
+        const outputText = eval(`${firstNum} ${operator} ${secondNum}`);
+        if (outputText !== outputText) {
+          throw new CalculationError("Got NaN! Don't inject JS in my calculator :(");
+        }
+        output.innerHTML = outputText;
+      } catch (err) {
+        if (err instanceof CalculationError) {
+          output.innerHTML = err.message;
+        } else {
+          output.innerHTML = 'Error! Whoops...';
+          console.error(err);
+        }
+      } finally {
+        console.log('Finished calculation run!');
+        console.groupEnd('Calculation Run #' + calculatorUseCount);
+        calculatorUseCount += 1;
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
-    // TODO - Make buttons functional
+    const logButton = errorBtns[0];
+    logButton.onclick = () => { console.log('Demo!') };
+
+    const errorButon = errorBtns[1];
+    errorButon.onclick = () => { console.error('Oh no!') };
+
+    const dirButton = errorBtns[2];
+    const objectDemo = {
+      course: 'CSE 110',
+      section: 'A01',
+      quarter: 'SP21',
+    };
+    dirButton.onclick = () => { console.dir(objectDemo) };
+
+    const dirXmlButton = errorBtns[3];
+    dirXmlButton.onclick = () => { console.dirxml(errorBtns) };
+
+    const groupStartButton = errorBtns[4];
+    const label = 'Group Set of Console Messages';
+    groupStartButton.onclick = () => { console.group(label) };
+
+    const groupEndButton = errorBtns[5];
+    groupEndButton.onclick = () => { console.groupEnd(label) };
+
+    const tableButton = errorBtns[6];
+    tableButton.onclick = () => { console.table(objectDemo) };
+
+    const startTimerButton = errorBtns[7];
+    startTimerButton.onclick = () => { console.time('Example Timer') };
+
+    const endTimerButton = errorBtns[8];
+    endTimerButton.onclick = () => { console.timeEnd('Example Timer') };
+
+    const throwButton = errorBtns[9];
+    throwButton.onclick = () => { throw new Error('some random error that I am not catching!'); };
+
+    const traceButton = errorBtns[9];
+    const Diggy = () => {console.trace()};
+    const diggy = () => { Diggy(); }
+    const hole = () => { diggy(); }
+    traceButton.onclick = () => { hole(); };
+
   </script>
 </body>
 </html>
