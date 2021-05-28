@@ -138,20 +138,16 @@
 
     const endTimerButton = errorBtns[8];
     endTimerButton.onclick = () => { console.timeEnd('Example Timer') };
-
-    const throwButton = errorBtns[9];
-    throwButton.onclick = () => { throw new Error('some random error that I am not catching!'); };
-
-    const globalErrorButton = errorBtns[10];
-    globalErrorButton.onclick = () => {globalError()};
-    window.onerror = () => {console.log('There was a global error')};
-
-
+    
     const traceButton = errorBtns[9];
     const Diggy = () => {console.trace()};
     const diggy = () => { Diggy(); }
     const hole = () => { diggy(); }
     traceButton.onclick = () => { hole(); };
+
+    const globalErrorButton = errorBtns[10];
+    globalErrorButton.onclick = () => {globalError()};
+    window.onerror = () => {console.log('There was a global error')};
 
   </script>
 </body>
